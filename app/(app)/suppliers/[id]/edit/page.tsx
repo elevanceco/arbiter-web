@@ -9,12 +9,14 @@ import { ChevronRight } from "lucide-react";
 export default async function EditSupplierPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
+
   const context = await resolveOrganizationContext();
   if (context.state !== "RESOLVED" || !context.organization) redirect("/login");
 
-  const supplier = await getSupplier(params.id);
+  const supplier = await getSupplier(id);
 
   // Bind the ID to the server action so the form component remains completely generic
   const updateSupplierWithId = updateSupplier.bind(null, supplier.id);

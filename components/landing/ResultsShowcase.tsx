@@ -72,9 +72,8 @@ export default function ResultsShowcase() {
             Lowest price doesn't automatically mean awarded supplier.
           </h2>
           <p className="text-lg text-slate-600 mb-6">
-            ReverseBid is a serious procurement software, not just a bidding
-            game. Procurement teams retain complete control over the final
-            decision.
+            Arbiter is a serious procurement software, not just a bidding game.
+            Procurement teams retain complete control over the final decision.
           </p>
           <ul className="space-y-4 text-slate-700">
             <li className="flex items-start gap-3">

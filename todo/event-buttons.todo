@@ -1,0 +1,26 @@
+EventActionButtons:
+    ✔ event.acceptedSupplierCount gabisa -> harus ambil dari EventSupplier yang statusnya ACCEPTED @started(26-11-21 11:55) @done(26-11-21 11:56) @lasted(1m3s)
+    ✔ fix asChild di button2, gatau kenapa error @started(26-11-21 11:56) @done(26-11-22 18:54) @lasted(1d6h58m4s)
+    ✔ buat openRoundAction @done(26-11-24 17:03)
+    ☐ buat closeRoundAction
+    ☐ buat cancelEventAction
+
+Open Round:
+    ☐ hanya available jika status sourcing INVITATION_PENDING dan minimal 1 supplier udah accept.
+    ☐ bikin button ini ubah status jadi OPEN
+    ☐ jika sudah OPEN, supplier bisa submit harga mereka
+
+Close Round:
+    ☐ hanya muncul jika bidding round lagi OPEN
+    ☐ jika sudah close round, supplier sudah tidak bisa submit lagi (tapi masih bisa mengakses linknya - munculin warning message di atas buat ngasih tau kalo roundnya udah closed & harganya lagi direview)
+
+Renegotiate:
+    ☐ hanya muncul jika round sudah closed
+    ☐ jika diklik, bakal buka halaman renegotiate
+
+Award Supplier:
+    ☐ hanya muncul jika round sudah closed.
+    ☐ saat diklik, bakal menunju halaman untuk Award Supplier
+
+Cancel RFQ:
+    ☐ hanya muncul jika status masih INVITATION_PENDING - kalo OPEN udah gabisa Cancel

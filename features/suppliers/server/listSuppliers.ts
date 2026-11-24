@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/db/prisma"; // Adjust import to your Prisma client
 import { resolveOrganizationContext } from "@/features/organizations/server/resolveOrganization";
 

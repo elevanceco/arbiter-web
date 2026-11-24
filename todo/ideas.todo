@@ -1,1 +1,9 @@
-☐ after udah jelas demo appnya gimana, nanti munculin animasi keren di landing page untuk "Live Demo".
+Home Page:
+    ☐ after udah jelas demo appnya gimana, nanti munculin animasi keren di landing page untuk "Live Demo".
+
+Dashboard Buyer:
+    ☐ NOTIFICATION untuk buyer - bisa untuk supplier yang menerima invitattionnya, decline invitation, submit price, dll
+
+Event Detail Buyer:
+    ☐ jika semua EventSupplier statusnya udah bukan "SELECTED", gausah ada tombol untuk kirim email - munculin warning "All suppliers have been sent an email, a supplier didn't receive an email? Click here to resend to a specific supplier" untuk ada pilihan resend email mandiri - harus dibatesin tapi ini kali ya jadi ga spam.
+    ☐ buat section untuk munculin alur bidding processnya - dari supplier submit - renegotiation - close round - open round - close bidding - dll.

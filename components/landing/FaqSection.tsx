@@ -8,14 +8,14 @@ export default function FaqSection() {
   const faqs = [
     {
       q: "Do suppliers need to pay?",
-      a: "No. Suppliers can participate in private ReverseBid sourcing events completely for free. We do not charge marketplace listing fees or take a percentage of the winning bid.",
+      a: "No. Suppliers can participate in private Arbiter sourcing events completely for free. We do not charge marketplace listing fees or take a percentage of the winning bid.",
     },
     {
       q: "Do I need to move my entire supplier database?",
-      a: "No. ReverseBid uses a Bring Your Own Vendors (BYOV) model. You simply invite the specific suppliers you want for each event via their email address.",
+      a: "No. Arbiter uses a Bring Your Own Vendors (BYOV) model. You simply invite the specific suppliers you want for each event via their email address.",
     },
     {
-      q: "Does ReverseBid automatically award the cheapest supplier?",
+      q: "Does Arbiter automatically award the cheapest supplier?",
       a: "No. Procurement teams retain complete control over the final supplier award. You can award a higher bidder if they offer better lead times, quality, or commercial terms.",
     },
     {
@@ -27,8 +27,8 @@ export default function FaqSection() {
       a: "No. Supplier visibility is strictly controlled. By default, a supplier can only see their own bid, their current rank, and the current lowest price, but never competitor company names.",
     },
     {
-      q: "Does ReverseBid handle supplier payments or purchase orders?",
-      a: "No. ReverseBid currently focuses exclusively on optimizing the sourcing, quotation, and bidding process. Once a supplier is awarded, you generate POs and process payments through your existing systems.",
+      q: "Does Arbiter handle supplier payments or purchase orders?",
+      a: "No. Arbiter currently focuses exclusively on optimizing the sourcing, quotation, and bidding process. Once a supplier is awarded, you generate POs and process payments through your existing systems.",
     },
   ];
 

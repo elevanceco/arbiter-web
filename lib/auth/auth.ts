@@ -18,7 +18,7 @@ export const auth = betterAuth({
     }) => {
       await sendEmail({
         to: user.email,
-        subject: "Reset your ReverseBid password",
+        subject: "Reset your Arbiter password",
         text: `Click here to reset your password: ${url}`,
       });
     },
@@ -29,8 +29,8 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
-        subject: "Verify your ReverseBid email",
-        text: `Welcome to ReverseBid! Click here to verify your email: ${url}`,
+        subject: "Verify your Arbiter email",
+        text: `Welcome to Arbiter! Click here to verify your email: ${url}`,
       });
     },
   },

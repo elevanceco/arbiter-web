@@ -1,6 +1,6 @@
-import { Resend } from "resend";
+import "server-only";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { Resend } from "resend";
 
 export interface EmailOptions {
   to: string;
@@ -9,40 +9,43 @@ export interface EmailOptions {
   html?: string;
 }
 
+export interface EmailResult {
+  id: string;
+}
+
 export async function sendEmail({
   to,
   subject,
   text,
   html,
-}: EmailOptions): Promise<void> {
-  // Graceful fallback if you forget to add the API key locally
-  if (!process.env.RESEND_API_KEY) {
-    console.warn("⚠️ RESEND_API_KEY is missing. Mock email dispatch:");
-    console.warn(`To: ${to} | Subject: ${subject}`);
-    console.warn(`Body: ${text}`);
-    return;
+}: EmailOptions): Promise<EmailResult> {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured.");
   }
 
-  const fromEmail =
-    process.env.EMAIL_FROM || "ReverseBid <onboarding@resend.dev>";
+  const fromEmail = process.env.EMAIL_FROM || "Arbiter <onboarding@resend.dev>";
 
-  try {
-    const { data, error } = await resend.emails.send({
-      from: fromEmail,
-      to,
-      subject,
-      text,
-      html: html || text, // Fallback to text if HTML isn't provided
-    });
+  const resend = new Resend(apiKey);
 
-    if (error) {
-      console.error("❌ Resend API Error:", error);
-      throw new Error(error.message);
-    }
+  const { data, error } = await resend.emails.send({
+    from: fromEmail,
+    to,
+    subject,
+    text,
+    html: html || text,
+  });
 
-    console.log("✅ Email sent successfully:", data?.id);
-  } catch (error) {
-    console.error("❌ Email sending failed:", error);
-    throw error;
+  if (error) {
+    throw new Error(`Email sending failed: ${error.message}`);
   }
+
+  if (!data?.id) {
+    throw new Error("Email provider did not return an email ID.");
+  }
+
+  return {
+    id: data.id,
+  };
 }

@@ -5,43 +5,55 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Slate/Charcoal for standard text */
-  --primary: oklch(0.205 0 0); /* Deep Authoritative Navy */
-  --primary-foreground: oklch(0.985 0 0);
-  --success: #059669; /* Subdued Emerald */
+  /* Core Palette — derived from the logo (navy #003277, blue #0b78e8, sky #6fc2fb) */
+  --background: #fefeff; /* Same cream as the logo background */
+  --foreground: #0a1a33;
+
+  --primary: #003277; /* Logo navy */
+  --primary-foreground: #f5f4ec;
+
+  --success: #16a34a;
   --success-foreground: #ffffff;
-  --warning: #d97706; /* Muted Amber */
+  --warning: #d97706;
   --warning-foreground: #ffffff;
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --radius: 0.625rem; /* Sharp corners globally */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Surfaces */
+  --card: #ffffff; /* Pure white offsets the cream background beautifully */
+  --card-foreground: #0a1a33;
+  --popover: #ffffff;
+  --popover-foreground: #0a1a33;
+
+  /* Accents & Muted */
+  --secondary: #bedff2; /* Pale logo blue */
+  --secondary-foreground: #003277;
+  --muted: #e8e7df; /* Slightly darker cream for contrast */
+  --muted-foreground: #6b7280;
+  --accent: #bedff2;
+  --accent-foreground: #003277;
+  --destructive: #ef4444;
+
+  /* Borders & Inputs */
+  --border: #6b728033; /* Slate gray with low opacity */
+  --input: #6b728033;
+  --ring: #0b78e8; /* Logo bright blue */
+  --radius: 0.625rem;
+
+  /* Charts */
+  --chart-1: #003277;
+  --chart-2: #0b78e8;
+  --chart-3: #6fc2fb;
+  --chart-4: #3868a8;
+  --chart-5: #6b7280;
+
+  /* Sidebar - Dark navy sidebar in light mode */
+  --sidebar: #04183a;
+  --sidebar-foreground: #f5f4ec;
+  --sidebar-primary: #6fc2fb;
+  --sidebar-primary-foreground: #04183a;
+  --sidebar-accent: #0a2a5e;
+  --sidebar-accent-foreground: #f5f4ec;
+  --sidebar-border: #0a2a5e;
+  --sidebar-ring: #6fc2fb;
 }
 
 @theme inline {
@@ -95,37 +107,49 @@ body {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Core Palette */
+  --background: #06142b; /* Deep navy */
+  --foreground: #f5f4ec;
+
+  --primary: #6fc2fb; /* Logo sky blue */
+  --primary-foreground: #06142b;
+
+  /* Surfaces */
+  --card: #0b1f3f; /* Slightly lighter than the deep navy background */
+  --card-foreground: #f5f4ec;
+  --popover: #0b1f3f;
+  --popover-foreground: #f5f4ec;
+
+  /* Accents & Muted */
+  --secondary: #12305f;
+  --secondary-foreground: #f5f4ec;
+  --muted: #0f2547;
+  --muted-foreground: #8b96a8;
+  --accent: #12305f;
+  --accent-foreground: #f5f4ec;
+  --destructive: #ef4444;
+
+  /* Borders & Inputs */
+  --border: #6b728040; /* Slate gray with opacity */
+  --input: #6b728040;
+  --ring: #6fc2fb;
+
+  /* Charts */
+  --chart-1: #6fc2fb;
+  --chart-2: #0b78e8;
+  --chart-3: #bedff2;
+  --chart-4: #3868a8;
+  --chart-5: #f5f4ec;
+
+  /* Sidebar */
+  --sidebar: #040e1f; /* Ultra-dark navy */
+  --sidebar-foreground: #f5f4ec;
+  --sidebar-primary: #6fc2fb;
+  --sidebar-primary-foreground: #06142b;
+  --sidebar-accent: #0b1f3f;
+  --sidebar-accent-foreground: #f5f4ec;
+  --sidebar-border: #0f2547;
+  --sidebar-ring: #6fc2fb;
 }
 
 @layer base {

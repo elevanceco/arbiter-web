@@ -12,7 +12,7 @@ export default function Logo({ width = 48, height = 48 }: LogoProps) {
       <Link href="/">
         <Image
           src="/logo.png"
-          alt="ReverseBid Logo"
+          alt="Arbiter Logo"
           width={width}
           height={height}
           className="mx-auto mb-2"

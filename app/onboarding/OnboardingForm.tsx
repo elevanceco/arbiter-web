@@ -102,7 +102,7 @@ export function OnboardingForm() {
         </label>
         <div className="flex rounded-md shadow-sm">
           <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-200 bg-slate-50 text-slate-500 sm:text-sm">
-            reversebid.com/
+            arbiter.com/
           </span>
           <Input
             placeholder="acme-corporation"

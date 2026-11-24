@@ -8,18 +8,13 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex flex-col items-center md:items-start gap-2">
           <div className="flex items-center">
-            <Image
-              src="/logo.png"
-              alt="ReverseBid Logo"
-              width={32}
-              height={32}
-            />
+            <Image src="/logo.png" alt="Arbiter Logo" width={32} height={32} />
             <span className="font-bold text-xl tracking-tight">
               <LogoTextOnly />
             </span>
           </div>
           <span className="text-sm text-slate-500">
-            © {new Date().getFullYear()} ReverseBid. All rights reserved.
+            © {new Date().getFullYear()} Arbiter. All rights reserved.
           </span>
         </div>
 

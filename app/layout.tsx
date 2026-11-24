@@ -2,35 +2,35 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "@/app/globals.css";
 import { cn } from "cn";
+import { Toaster } from "@/components/ui/sonner";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "ReverseBid | B2B eSourcing & Reverse Auction Platform",
+  title: "Arbiter | B2B eSourcing & RFQ Platform",
   description:
-    "Turn your Excel-based vendor quotation process into an auditable sourcing event in minutes. Create structured RFQs, run live reverse auctions, and export defensible audit trails.",
+    "Turn your Excel-based vendor quotation process into an auditable sourcing event in minutes. Create structured RFQs, compare supplier quotations, and export defensible audit trails.",
   keywords: [
     "eSourcing",
-    "reverse auction software",
     "RFQ platform",
     "procurement software",
     "vendor quotation",
     "B2B sourcing",
-    "ReverseBid",
+    "Arbiter",
   ],
-  authors: [{ name: "ReverseBid" }],
+  authors: [{ name: "Arbiter" }],
   openGraph: {
-    title: "ReverseBid | Graduate from Excel-based Procurement",
+    title: "Arbiter | Graduate from Excel-based Procurement",
     description:
-      "Replace scattered supplier quotations across Excel and email with structured RFQs, competitive bidding, and an auditable sourcing workflow.",
-    url: "https://reversebid.com",
-    siteName: "ReverseBid",
+      "Replace scattered supplier quotations across Excel and email with structured RFQs, centralized quotation comparison, and an auditable sourcing workflow.",
+    url: "https://arbiter.com",
+    siteName: "Arbiter",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ReverseBid | B2B eSourcing Platform",
+    title: "Arbiter | B2B eSourcing Platform",
     description:
       "Turn your Excel-based vendor quotation process into an auditable sourcing event in minutes.",
   },
@@ -44,9 +44,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("font-sans scroll-smooth", geist.variable)}>
       <body
-        className={`${geist.variable} font-sans antialiased bg-background text-foreground flex flex-col min-h-screen`}
+        className={`${geist.variable} font-sans antialiased bg-black text-foreground flex flex-col min-h-screen`}
       >
-        <main className="grow">{children}</main>
+        <main className="grow">
+          {children}
+          <Toaster position="top-right" richColors />
+        </main>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 interface ProductMockupProps {
   variants?: Variants;
@@ -8,80 +8,135 @@ interface ProductMockupProps {
 
 export function ProductMockup({ variants }: ProductMockupProps) {
   return (
+    // `dark` keeps the mockup on the dark theme tokens regardless of app theme.
     <motion.div
       variants={variants}
-      className="w-full max-w-4xl perspective-[2000px]"
+      className="dark w-full max-w-4xl perspective-[2000px]"
     >
       <motion.div
         animate={{ y: [0, -10, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl shadow-blue-900/20 p-4 sm:p-6 font-mono text-sm select-none overflow-hidden relative"
+        className="relative select-none overflow-hidden rounded-2xl border border-border bg-card p-4 font-mono text-sm shadow-2xl shadow-background/40 sm:p-6"
       >
         {/* Glossy top reflection */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/[0.05] to-transparent pointer-events-none"></div>
+        <div className="pointer-events-none absolute left-0 right-0 top-0 h-32 bg-gradient-to-b from-white/[0.05] to-transparent" />
 
-        <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-800 relative z-10">
-          <div className="flex gap-2 mb-4 absolute -top-2 -left-2 sm:-top-2 sm:left-0">
-            <div className="w-3 h-3 rounded-full bg-slate-700"></div>
-            <div className="w-3 h-3 rounded-full bg-slate-700"></div>
-            <div className="w-3 h-3 rounded-full bg-slate-700"></div>
+        {/* Header */}
+        <div className="relative z-10 mb-6 flex items-center justify-between border-b border-border pb-4">
+          {/* macOS window controls: close, minimize, fullscreen */}
+          <div className="absolute -left-2 -top-2 mb-4 flex gap-2 sm:left-0 sm:top-0">
+            <div className="h-3 w-3 rounded-full border border-[#e0443e] bg-[#ff5f57]" />
+            <div className="h-3 w-3 rounded-full border border-[#dea123] bg-[#febc2e]" />
+            <div className="h-3 w-3 rounded-full border border-[#1aab29] bg-[#28c840]" />
           </div>
-          <div className="mt-4 sm:mt-0 sm:ml-16">
-            <div className="font-semibold text-slate-200 font-sans text-base">
+
+          <div className="ml-0 mt-4 sm:ml-16 sm:mt-0">
+            <div className="font-sans text-base font-semibold text-foreground">
               Packaging Materials Q4
             </div>
-            <div className="text-slate-400 text-xs mt-1">Ends in 01:42:16</div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              RFQ-2026-0042 · 3 invited suppliers
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-md border border-emerald-400/20 mt-4 sm:mt-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            LIVE
+
+          <div className="mt-4 flex items-center gap-2 rounded-md border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-chart-3 sm:mt-0">
+            <span className="h-2 w-2 rounded-full bg-primary" />
+            QUOTATIONS RECEIVED
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-6 relative z-10">
-          <div className="bg-slate-800/50 p-4 border border-slate-700/50 rounded-xl">
-            <div className="text-slate-400 text-xs mb-1 uppercase tracking-wider">
-              Current Best
+        {/* Summary Cards */}
+        <div className="relative z-10 mb-6 grid grid-cols-2 gap-4">
+          <div className="rounded-xl border border-border bg-muted p-4">
+            <div className="mb-1 text-xs uppercase tracking-wider text-muted-foreground">
+              Quotations Received
             </div>
-            <div className="text-2xl font-bold text-white">$48,500</div>
+            <div className="text-2xl font-bold text-foreground">3 of 3</div>
+            <div className="mt-1 text-xs text-primary">
+              All suppliers responded
+            </div>
           </div>
-          <div className="bg-slate-800/50 p-4 border border-slate-700/50 rounded-xl">
-            <div className="text-slate-400 text-xs mb-1 uppercase tracking-wider">
-              Potential Savings
+
+          <div className="rounded-xl border border-border bg-muted p-4">
+            <div className="mb-1 text-xs uppercase tracking-wider text-muted-foreground">
+              Items Quoted
             </div>
-            <div className="text-2xl font-bold text-blue-400">8.7%</div>
+            <div className="text-2xl font-bold text-chart-3">4 of 4</div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              Across all quotations
+            </div>
           </div>
         </div>
 
-        <div className="bg-slate-950/50 border border-slate-800 rounded-xl overflow-hidden relative z-10">
-          <table className="w-full text-left">
-            <thead className="bg-slate-900 border-b border-slate-800 text-xs text-slate-400 uppercase tracking-wider">
-              <tr>
-                <th className="p-4 font-medium">Rank</th>
-                <th className="p-4 font-medium">Supplier</th>
-                <th className="p-4 font-medium">Latest Bid</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/50">
-              <tr className="bg-blue-900/20 relative">
-                <td className="p-4 font-bold text-blue-400">#1</td>
-                <td className="p-4 text-slate-200">Supplier A</td>
-                <td className="p-4 font-bold text-white">$48,500</td>
-                {/* Highlight indicator for leader */}
-                <td className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></td>
-              </tr>
-              <tr className="hover:bg-slate-800/30 transition-colors">
-                <td className="p-4 text-slate-500">#2</td>
-                <td className="p-4 text-slate-300">Supplier B</td>
-                <td className="p-4 text-slate-400">$48,850</td>
-              </tr>
-              <tr className="hover:bg-slate-800/30 transition-colors">
-                <td className="p-4 text-slate-500">#3</td>
-                <td className="p-4 text-slate-300">Supplier C</td>
-                <td className="p-4 text-slate-400">$49,300</td>
-              </tr>
-            </tbody>
-          </table>
+        {/* Quotation Comparison */}
+        <div className="relative z-10 overflow-hidden rounded-xl border border-border bg-background/60">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <div className="font-sans text-sm font-semibold text-foreground">
+              Quotation Comparison
+            </div>
+            <div className="text-xs text-primary">3 quotations</div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[540px] text-left">
+              <thead className="border-b border-border bg-card text-xs uppercase tracking-wider text-muted-foreground">
+                <tr>
+                  <th className="p-4 font-medium">Supplier</th>
+                  <th className="p-4 font-medium">Unit Price</th>
+                  <th className="p-4 font-medium">Delivery</th>
+                  <th className="p-4 font-medium">Status</th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-border">
+                <tr className="bg-primary/[0.07]">
+                  <td className="p-4 font-medium text-foreground">
+                    Supplier A
+                  </td>
+                  <td className="p-4 font-semibold text-foreground">$48.50</td>
+                  <td className="p-4 text-foreground/75">14 days</td>
+                  <td className="p-4">
+                    <span className="rounded-md bg-primary/15 px-2 py-1 text-xs font-medium text-chart-3">
+                      Submitted
+                    </span>
+                  </td>
+                </tr>
+
+                <tr className="transition-colors hover:bg-muted/60">
+                  <td className="p-4 text-foreground/90">Supplier B</td>
+                  <td className="p-4 text-foreground/75">$49.20</td>
+                  <td className="p-4 text-foreground/75">10 days</td>
+                  <td className="p-4">
+                    <span className="rounded-md bg-primary/15 px-2 py-1 text-xs font-medium text-chart-3">
+                      Submitted
+                    </span>
+                  </td>
+                </tr>
+
+                <tr className="transition-colors hover:bg-muted/60">
+                  <td className="p-4 text-foreground/90">Supplier C</td>
+                  <td className="p-4 text-foreground/75">$50.10</td>
+                  <td className="p-4 text-foreground/75">7 days</td>
+                  <td className="p-4">
+                    <span className="rounded-md bg-primary/15 px-2 py-1 text-xs font-medium text-chart-3">
+                      Submitted
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="relative z-10 mt-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+          <div className="text-xs text-muted-foreground">
+            Quotations are private and visible only to the buyer.
+          </div>
+
+          <div className="rounded-lg bg-primary px-4 py-2 font-sans text-xs font-semibold text-primary-foreground">
+            Review Quotations
+          </div>
         </div>
       </motion.div>
     </motion.div>

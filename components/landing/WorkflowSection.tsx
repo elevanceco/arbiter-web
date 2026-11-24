@@ -15,12 +15,12 @@ export default function WorkflowSection() {
     {
       num: "3",
       title: "Collect & Compete",
-      desc: "Receive quotations or run a live reverse auction.",
+      desc: "Receive quotations. Renegotiate and compare in a single platform.",
     },
     {
       num: "4",
       title: "Compare & Award",
-      desc: "Review bids, select a supplier, and export the auditable result.",
+      desc: "Review quotations, select a supplier, and export the auditable result.",
     },
   ];
 

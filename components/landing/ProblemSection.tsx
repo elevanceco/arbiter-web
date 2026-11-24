@@ -139,7 +139,7 @@ export default function ProblemSection() {
             Procurement manually compares everything in Excel.
           </p>
           <p className="text-slate-400 text-sm md:text-base leading-relaxed">
-            ReverseBid brings the entire sourcing process into one structured
+            Arbiter brings the entire sourcing process into one structured
             place.
           </p>
         </motion.div>

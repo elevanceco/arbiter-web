@@ -51,14 +51,9 @@ export function AppHeader({ user, organization, role }: AppHeaderProps) {
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-slate-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
       {/* Mobile Menu (Sheet) */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger>
-          <button
-            type="button"
-            className="-m-2.5 p-2.5 text-slate-700 md:hidden hover:bg-slate-100 rounded-md transition-colors"
-          >
-            <span className="sr-only">Open sidebar</span>
-            <Menu className="h-6 w-6" aria-hidden="true" />
-          </button>
+        <SheetTrigger className="-m-2.5 p-2.5 text-slate-700 md:hidden hover:bg-slate-100 rounded-md transition-colors">
+          <span className="sr-only">Open sidebar</span>
+          <Menu className="h-6 w-6" aria-hidden="true" />
         </SheetTrigger>
         <SheetContent
           side="left"
@@ -77,7 +72,7 @@ export function AppHeader({ user, organization, role }: AppHeaderProps) {
             >
               <Image
                 src="/logo.png"
-                alt="ReverseBid"
+                alt="Arbiter"
                 width={28}
                 height={28}
                 className="w-7 h-7 rounded"

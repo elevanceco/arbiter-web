@@ -8,13 +8,14 @@ import { authClient } from "@/lib/auth/auth-client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, Circle } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LogoTextOnly from "../ui/LogoTextOnly";
 import GoogleSignInButton from "./GoogleSignInButton";
 import Logo from "../ui/Logo";
 
-// 1. Reinforced Zod Schema
+// Validation Schema
 const registerSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -38,13 +39,31 @@ const registerSchema = z
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
+// Reusable Checklist Item
+function ChecklistItem({ met, label }: { met: boolean; label: string }) {
+  return (
+    <div
+      className={`flex items-center gap-2 text-xs transition-colors ${
+        met ? "text-foreground" : "text-muted-foreground"
+      }`}
+    >
+      {met ? (
+        <CheckCircle2 className="w-3.5 h-3.5 text-success" />
+      ) : (
+        <Circle className="w-3.5 h-3.5 text-muted-foreground" />
+      )}
+      <span>{label}</span>
+    </div>
+  );
+}
+
 export function RegisterForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    mode: "onChange", // Validates as the user types
+    mode: "onChange",
     defaultValues: {
       name: "",
       email: "",
@@ -55,6 +74,7 @@ export function RegisterForm() {
 
   const onSubmit = async (data: RegisterFormData) => {
     setError(null);
+
     const { error: signUpError } = await authClient.signUp.email({
       email: data.email,
       password: data.password,
@@ -69,6 +89,7 @@ export function RegisterForm() {
       );
       return;
     }
+
     router.push("/onboarding");
     router.refresh();
   };
@@ -87,58 +108,58 @@ export function RegisterForm() {
     { label: "One uppercase letter", met: /[A-Z]/.test(watchPassword) },
     { label: "One lowercase letter", met: /[a-z]/.test(watchPassword) },
     { label: "One number", met: /[0-9]/.test(watchPassword) },
-    { label: "One special character", met: /[^a-zA-Z0-9]/.test(watchPassword) },
+    {
+      label: "One special character",
+      met: /[^a-zA-Z0-9]/.test(watchPassword),
+    },
   ];
 
   const metPasswordCriteriaCount = passwordCriteria.filter((c) => c.met).length;
 
-  // Calculate Strength Bar Width & Color
+  // Password Strength Indicator
   const strengthPercentage =
     (metPasswordCriteriaCount / passwordCriteria.length) * 100;
-  let strengthColor = "bg-slate-200";
-  if (metPasswordCriteriaCount > 0 && metPasswordCriteriaCount <= 2)
-    strengthColor = "bg-red-500";
-  else if (metPasswordCriteriaCount === 3 || metPasswordCriteriaCount === 4)
-    strengthColor = "bg-yellow-500";
-  else if (metPasswordCriteriaCount === 5) strengthColor = "bg-emerald-500";
 
-  // Reusable Checklist Item Component
-  const ChecklistItem = ({ met, label }: { met: boolean; label: string }) => (
-    <div
-      className={`flex items-center gap-2 text-xs transition-colors ${met ? "text-emerald-600" : "text-slate-400"}`}
-    >
-      {met ? (
-        <CheckCircle2 className="w-3.5 h-3.5" />
-      ) : (
-        <Circle className="w-3.5 h-3.5" />
-      )}
-      <span>{label}</span>
-    </div>
-  );
+  let strengthColor = "bg-muted";
+
+  if (metPasswordCriteriaCount > 0 && metPasswordCriteriaCount <= 2) {
+    strengthColor = "bg-destructive";
+  } else if (metPasswordCriteriaCount === 3 || metPasswordCriteriaCount === 4) {
+    strengthColor = "bg-warning";
+  } else if (metPasswordCriteriaCount === 5) {
+    strengthColor = "bg-success";
+  }
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="text-center">
         <Logo />
-        <h1 className="text-2xl font-bold text-slate-900">
+
+        <h1 className="text-2xl font-bold text-foreground">
           Create your <LogoTextOnly /> account
         </h1>
       </div>
 
+      {/* Google Sign In */}
       <GoogleSignInButton callbackURL="/dashboard" text="Sign up with Google" />
 
+      {/* Divider */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <span className="w-full border-t border-border" />
         </div>
+
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-slate-500">OR</span>
+          <span className="bg-background px-2 text-muted-foreground">OR</span>
         </div>
       </div>
 
+      {/* Registration Form */}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* Error Message */}
         {error && (
-          <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-100">
+          <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
             {error}
           </div>
         )}
@@ -151,6 +172,7 @@ export function RegisterForm() {
             disabled={form.formState.isSubmitting}
             className="mb-2"
           />
+
           <ChecklistItem met={isNameValid} label="At least 2 characters" />
         </div>
 
@@ -163,6 +185,7 @@ export function RegisterForm() {
             disabled={form.formState.isSubmitting}
             className="mb-2"
           />
+
           <ChecklistItem met={isEmailValid} label="Valid email format" />
         </div>
 
@@ -177,14 +200,14 @@ export function RegisterForm() {
           />
 
           {/* Password Strength Indicator */}
-          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden mb-3">
+          <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-3">
             <div
               className={`h-full transition-all duration-300 ${strengthColor}`}
               style={{ width: `${strengthPercentage}%` }}
             />
           </div>
 
-          {/* Password Criteria Checklist */}
+          {/* Password Criteria */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mt-2">
             {passwordCriteria.map((criteria, idx) => (
               <ChecklistItem
@@ -204,13 +227,15 @@ export function RegisterForm() {
             {...form.register("confirmPassword")}
             disabled={form.formState.isSubmitting}
           />
+
           {form.formState.errors.confirmPassword && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-destructive text-xs mt-1">
               {form.formState.errors.confirmPassword.message}
             </p>
           )}
         </div>
 
+        {/* Submit Button */}
         <Button
           type="submit"
           className="w-full mt-2"
@@ -222,11 +247,12 @@ export function RegisterForm() {
         </Button>
       </form>
 
-      <div className="text-center text-sm text-slate-600 mt-6">
+      {/* Login Link */}
+      <div className="text-center text-sm text-muted-foreground mt-6">
         Already have an account?{" "}
         <Link
           href="/login"
-          className="text-blue-600 font-semibold hover:underline"
+          className="text-primary font-semibold hover:underline"
         >
           Sign in
         </Link>

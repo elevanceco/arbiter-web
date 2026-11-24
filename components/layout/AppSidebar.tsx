@@ -55,7 +55,7 @@ export function AppSidebar({ user, organization, role }: AppSidebarProps) {
         >
           <Image
             src="/logo.png"
-            alt="ReverseBid"
+            alt="Arbiter"
             width={28}
             height={28}
             className="w-7 h-7 rounded"

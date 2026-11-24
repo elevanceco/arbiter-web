@@ -42,9 +42,10 @@ model User {
   sessions      Session[]
   accounts      Account[]
   
-  // ReverseBid relations
+  // Arbiter relations
   memberships   OrganizationMember[]
   souringEvents SourcingEvent[]
+  auditLogs AuditLog[]
 }
 
 model Session {
@@ -159,24 +160,14 @@ model Supplier {
   @@index([organizationId, legalName])
 }
 
-enum SourcingEventType {
-  RFQ
-  REVERSE_AUCTION
-}
-
 enum SourcingEventStatus {
   DRAFT
   SCHEDULED
+  INVITATION_PENDING
   OPEN
   CLOSED
   AWARDED
   CANCELLED
-}
-
-enum SupplierBidVisibility {
-  OWN_RANK_ONLY
-  BEST_PRICE
-  HIDDEN
 }
 
 model SourcingEvent {
@@ -187,7 +178,6 @@ model SourcingEvent {
   description    String?
   referenceCode  String?
 
-  type           SourcingEventType
   status         SourcingEventStatus @default(DRAFT)
 
   currency       String
@@ -205,10 +195,11 @@ model SourcingEvent {
   createdBy      User         @relation(fields: [createdById], references: [id])
 
   lots           SourcingLot[]
-  auctionSettings AuctionSettings?
   eventInvitations EventSupplierInvitation[]
   eventSessions  SupplierEventSession[]
   eventSuppliers EventSupplier[]
+  quotations Quotation[]
+  auditLogs AuditLog[]
 
   @@index([organizationId])
   @@index([organizationId, status])
@@ -250,26 +241,9 @@ model SourcingItem {
   updatedAt     DateTime @updatedAt
 
   lot           SourcingLot @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  quotationLines QuotationLine[]
 
   @@index([lotId])
-}
-
-model AuctionSettings {
-  id                        String                @id @default(cuid())
-  eventId                   String                @unique
-
-  minimumDecrement          Decimal?
-
-  softCloseEnabled          Boolean               @default(true)
-  softCloseThresholdSeconds Int                   @default(120)
-  softCloseExtensionSeconds Int                   @default(120)
-  
-  supplierVisibility        SupplierBidVisibility @default(OWN_RANK_ONLY)
-
-  createdAt                 DateTime              @default(now())
-  updatedAt                 DateTime              @updatedAt
-
-  event                     SourcingEvent         @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
 
 // -----------------------------------------------------------------------------
@@ -297,6 +271,7 @@ model EventSupplier {
   event      SourcingEvent       @relation(fields: [eventId], references: [id], onDelete: Cascade)
   supplier   Supplier            @relation(fields: [supplierId], references: [id], onDelete: Restrict)
   invitation EventSupplierInvitation?
+  quotations Quotation[]
 
   @@unique([eventId, supplierId])
   @@index([eventId])
@@ -329,6 +304,7 @@ model EventSupplierInvitation {
   supplier        Supplier?        @relation(fields: [supplierId], references: [id], onDelete: SetNull)
   eventSupplier   EventSupplier @relation(fields: [eventSupplierId], references: [id], onDelete: Cascade)
   sessions        SupplierEventSession[]
+  quotations Quotation[]
 
   @@index([eventId])
   @@index([supplierId])
@@ -352,9 +328,96 @@ model SupplierEventSession {
   invitation     EventSupplierInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   event          SourcingEvent           @relation(fields: [eventId], references: [id], onDelete: Cascade)
   supplier       Supplier?               @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  quotations Quotation[]
 
   @@index([invitationId])
   @@index([eventId])
   @@index([supplierId])
 }
 
+// ─── New models ───────────────────────────────────────────────────────────────
+
+enum QuotationStatus {
+  SUBMITTED
+}
+
+/// One row = one immutable submitted revision. "Latest" = highest revisionNumber.
+/// Never UPDATE or DELETE these rows from application code.
+model Quotation {
+  id              String          @id @default(cuid())
+  eventId         String
+  eventSupplierId String
+  revisionNumber  Int
+  status          QuotationStatus @default(SUBMITTED)
+
+  currency      String
+  totalAmount   Decimal   @db.Decimal(18, 4) // computed server-side from lines
+  leadTimeDays  Int?
+  validUntil    DateTime?
+  deliveryTerms String?
+  paymentTerms  String?
+  notes         String?
+
+  submittedAt DateTime @default(now())
+
+  // Supplier-side actor: nullable; SetNull so session cleanup never deletes history.
+  submittedBySessionId    String?
+  submittedByInvitationId String?
+
+  event         SourcingEvent            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventSupplier EventSupplier            @relation(fields: [eventSupplierId], references: [id], onDelete: Cascade)
+  session       SupplierEventSession?    @relation(fields: [submittedBySessionId], references: [id], onDelete: SetNull)
+  invitation    EventSupplierInvitation? @relation(fields: [submittedByInvitationId], references: [id], onDelete: SetNull)
+
+  lines QuotationLine[]
+
+  // Backstop: even if locking fails, duplicate revision numbers are impossible.
+  @@unique([eventSupplierId, revisionNumber])
+  @@index([eventId, eventSupplierId])
+  @@index([submittedBySessionId])
+  @@index([submittedByInvitationId])
+}
+
+model QuotationLine {
+  id          String @id @default(cuid())
+  quotationId String
+  itemId      String
+
+  unit              String  // snapshot of requested unit
+  requestedQuantity Decimal @db.Decimal(18, 4) // snapshot
+  quotedQuantity    Decimal @db.Decimal(18, 4)
+  unitPrice         Decimal @db.Decimal(18, 4)
+  lineTotal         Decimal @db.Decimal(18, 4)
+  leadTimeDays      Int?
+  notes             String?
+
+  quotation Quotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  item      SourcingItem @relation(fields: [itemId], references: [id], onDelete: NoAction)
+
+  @@unique([quotationId, itemId])
+  @@index([itemId])
+}
+
+enum AuditActorType {
+  SUPPLIER // invitation/session based, no User
+  BUYER    // authenticated User
+  SYSTEM
+}
+
+// T_TRACK
+model AuditLog {
+  id          String         @id @default(cuid())
+  eventId     String
+  action      String         // e.g. "QUOTATION_SUBMITTED"
+  actorType   AuditActorType
+  actorUserId String?        // set for BUYER actions only
+  metadata    Json?
+  createdAt   DateTime       @default(now())
+
+  event     SourcingEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  actorUser User?         @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([eventId, createdAt])
+  @@index([action])
+  @@index([actorUserId])
+}

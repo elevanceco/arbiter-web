@@ -49,8 +49,8 @@ export function LoginForm() {
       <div className="text-center">
         <Logo />
 
-        <h1 className="text-2xl font-bold text-slate-900">Welcome back</h1>
-        <p className="text-sm text-slate-500 mt-2">
+        <h1 className="text-2xl font-bold text-foreground">Welcome back</h1>
+        <p className="text-sm text-muted-foreground mt-2">
           Sign in to your <LogoTextOnly /> workspace.
         </p>
       </div>
@@ -59,16 +59,17 @@ export function LoginForm() {
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <span className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-slate-500">OR</span>
+          {/* Using bg-card to seamlessly blend with the AuthLayout's card background */}
+          <span className="bg-card px-2 text-muted-foreground">OR</span>
         </div>
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {error && (
-          <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-100">
+          <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
             {error}
           </div>
         )}
@@ -81,7 +82,7 @@ export function LoginForm() {
             disabled={form.formState.isSubmitting}
           />
           {form.formState.errors.email && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-destructive text-xs mt-1">
               {form.formState.errors.email.message}
             </p>
           )}
@@ -95,7 +96,7 @@ export function LoginForm() {
             disabled={form.formState.isSubmitting}
           />
           {form.formState.errors.password && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-destructive text-xs mt-1">
               {form.formState.errors.password.message}
             </p>
           )}
@@ -110,10 +111,10 @@ export function LoginForm() {
         </Button>
       </form>
 
-      <div className="flex flex-col items-center gap-2 text-sm text-slate-600 mt-6">
+      <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground mt-6">
         <Link
           href="/forgot-password"
-          className="hover:text-blue-600 font-medium"
+          className="hover:text-primary transition-colors font-medium"
         >
           Forgot password?
         </Link>
@@ -121,7 +122,7 @@ export function LoginForm() {
           Don't have an account?{" "}
           <Link
             href="/register"
-            className="text-blue-600 font-semibold hover:underline"
+            className="text-primary font-semibold hover:underline"
           >
             Create account
           </Link>

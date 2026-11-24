@@ -1,128 +1,93 @@
-# Product Requirements Document — ReverseBid
+# Product Requirements Document — Arbiter
 
-> Working name: **ReverseBid**
-> Product category: B2B eSourcing / RFQ / Reverse Auction SaaS
-> Target platform: Web
-> Primary stack: Next.js, React, Prisma, PostgreSQL
+> Product: **Arbiter**  
+> Category: B2B sourcing, RFQ, and supplier quotation management SaaS  
+> Platform: Web  
+> Primary stack: Next.js, React, TypeScript, Prisma, PostgreSQL  
 > Primary customer: Procurement teams at SMEs and mid-market companies
 
 ---
 
 ## 1. Product Summary
 
-ReverseBid is a lightweight B2B eSourcing platform for procurement teams that currently manage supplier quotations through Excel, email, WhatsApp, and manual comparison sheets.
+Arbiter is a lightweight B2B sourcing platform for procurement teams that currently manage supplier quotations through Excel, email, WhatsApp, and manual comparison sheets.
 
-The product allows buyers to:
+Arbiter helps buyers:
 
 1. Create an RFQ / sourcing event.
-2. Add items, lots, quantities, and specifications.
-3. Invite known suppliers privately.
-4. Collect initial quotations.
-5. Optionally run a live reverse auction.
-6. Compare bids.
-7. Award a supplier.
-8. Export an auditable result.
+2. Add items, lots, quantities, specifications, and supporting documents.
+3. Invite known suppliers privately by email.
+4. Give each invited supplier a unique, secret link to access that RFQ without creating an account or logging in.
+5. Collect quotations and permitted revisions.
+6. Compare supplier quotations.
+7. Select and award a supplier.
+8. Export an auditable sourcing result.
 
-### Core positioning
+**Core positioning**
 
 > Turn your Excel-based vendor quotation process into an auditable sourcing event in minutes.
 
-ReverseBid is **not** intended to be a full ERP, payment platform, or enterprise procurement suite in the first versions.
+Arbiter is not a reverse-auction platform, full ERP, payment platform, public procurement marketplace, or enterprise procurement suite in its initial versions.
 
-The initial wedge is:
+**Initial product wedge**
 
-**Excel + Email + WhatsApp → Structured RFQ + Reverse Auction + Audit Trail**
-
----
+**Excel + Email + WhatsApp → Structured RFQ + Private Supplier Invitations + Quotation Comparison + Audit Trail**
 
 ## 2. Product Principles
 
-The following principles should guide all implementation decisions.
-
 ### 2.1 Private sourcing first
 
-The initial product is not a public procurement marketplace.
+The initial product is not a public procurement marketplace. Buyers bring their own suppliers (BYOV — Bring Your Own Vendors). Public supplier discovery may be considered only after the private sourcing workflow is proven.
 
-Buyers bring their own suppliers.
+### 2.2 No auctions or competitive live bidding
 
-This is the **BYOV — Bring Your Own Vendors** model.
+Arbiter supports RFQs and private commercial quotations only.
 
-Public supplier discovery is a future expansion only after a supplier network grows organically.
+A supplier may submit an initial quotation and, when permitted, a revised quotation before the RFQ deadline. Each revision is a new version of that supplier's offer. It is not a live auction bid.
 
-### 2.2 Reverse auction is a feature, not the entire product
+The product must not include:
 
-The product should eventually support:
+- Reverse or forward auctions.
+- Live competitive bidding or auction rounds.
+- Live ranking, supplier leaderboards, or current-best-price indicators.
+- Minimum decrement rules.
+- Auction countdowns, soft close, or automatic deadline extensions.
+- Competitor bid visibility or competitive positioning.
 
-- Standard RFQ
-- Multi-round quotation
-- Live reverse auction
+### 2.3 Buyer makes the award decision
 
-The system should not force every sourcing event into a live auction.
+The lowest quotation does not automatically win. Buyers may consider:
 
-### 2.3 Lowest bidder does not automatically win
+- Price and total cost.
+- Quality and specification compliance.
+- Lead time and delivery capability.
+- Capacity and availability.
+- Commercial terms and payment terms.
+- Certifications and other compliance requirements.
 
-The product must distinguish:
-
-- Lowest current bidder
-- Awarded supplier
-
-The buyer always makes the final award decision.
-
-Award decisions may consider:
-
-- Price
-- Quality
-- Lead time
-- Capacity
-- Commercial terms
-- Compliance
-- Delivery requirements
+Arbiter records the buyer's decision and justification; it does not automatically select a supplier.
 
 ### 2.4 Database is the source of truth
 
-Never trust:
+The server and database determine authorization, invitation validity, RFQ status, deadlines, quotation history, and awards. Never trust client-side state or browser time for business rules.
 
-- Browser time
-- Client-side ranking
-- Client-side bid validation
-- Client-side auction state
+### 2.5 Quotations are immutable records
 
-All bidding rules must be validated server-side.
-
-### 2.5 Bids are immutable
-
-Never overwrite historical bids.
-
-Every new bid must create a new bid record.
-
-Example:
-
-- Bid 1: Rp100,000,000 at 14:03:12
-- Bid 2: Rp95,000,000 at 14:08:44
-
-Do not update Bid 1 to Rp95,000,000.
+Never overwrite a submitted quotation revision. A supplier's next submission creates a new quotation revision linked to the same event-supplier relationship. The system must preserve who submitted it (through the invitation/session context), when it was submitted, and the submitted commercial data.
 
 ### 2.6 Auditability is a core feature
 
-Procurement teams need defensible event history.
-
-Important changes and actions must be recorded in an audit log.
-
----
+Important actions and changes must be recorded, including invitation creation/revocation, invitation access, quotation submission/revision, RFQ changes, RFQ closure, award creation/change, and exports.
 
 ## 3. Target Customers
 
 ### Initial ICP
 
-Primary targets:
-
-- SMEs
-- Mid-market companies
-- Manufacturers
-- Distributors
-- Construction companies
-- Hospitality groups
-- Multi-location businesses
+- SMEs and mid-market companies.
+- Manufacturers and distributors.
+- Construction companies.
+- Hospitality groups.
+- Multi-location businesses.
 
 Ideal customers already have established suppliers but manage RFQs manually.
 
@@ -130,696 +95,538 @@ Ideal customers already have established suppliers but manage RFQs manually.
 
 **Procurement Officer / Procurement Manager**
 
-Common pain points:
+Pain points:
 
-- Chasing suppliers over WhatsApp or email
-- Manually comparing quotation spreadsheets
-- No standardized bid process
-- No audit trail
-- Difficulty tracking negotiation rounds
-- Difficulty proving savings
-- Supplier quotations arrive in inconsistent formats
-- Procurement events are difficult to revisit later
+- Chasing suppliers over WhatsApp or email.
+- Manually comparing quotation spreadsheets.
+- Supplier quotations arriving in inconsistent formats.
+- No standardized RFQ process or audit trail.
+- Difficulty tracking quotation revisions and negotiation history.
+- Difficulty revisiting past sourcing decisions.
 
 ### Supplier persona
 
-Supplier sales representative who needs to:
+A supplier sales representative who needs to:
 
-- Receive invitation
-- Understand RFQ requirements
-- Submit quotation
-- Participate in a reverse auction
-- See their own bidding position
-- Avoid complex onboarding
+- Receive an invitation by email.
+- Open a secure link without registering or logging in.
+- Understand RFQ requirements and deadlines.
+- Submit a quotation and, if allowed, revise it.
+- Upload requested supporting documents.
+- Review their own submission history.
+- Receive status and award notifications.
 
----
+The supplier must not need a Arbiter account for this workflow.
 
 ## 4. MVP Scope
 
-The MVP must include three major product areas.
+The MVP has four core areas:
 
----
+1. Buyer workspace and RFQ management.
+2. Private supplier invitations and link-based access.
+3. Quotation submission and revision.
+4. Quotation comparison, award, audit trail, and export.
 
-# 4.1 Private RFQ & Supplier Invitation
+### 4.1 Buyer workspace and RFQ management
 
-## Buyer capabilities
+Buyer capabilities:
 
-Buyer can:
+- Create and manage a buyer organization.
+- Invite buyer-side team members and assign roles.
+- Create, edit, launch, close, and cancel RFQs subject to state rules.
+- Enter RFQ title, reference number (if applicable), description, currency, submission deadline, and relevant dates.
+- Add one or more lots and items.
+- Define quantities, units of measure, specifications, and delivery requirements.
+- Upload RFQ attachments such as scope documents, drawings, images, and PDF specifications.
+- Add qualification questions when enabled.
+- Add suppliers from the buyer's saved supplier directory or enter a one-off supplier.
+- Send and resend supplier invitations.
+- Monitor invitation and supplier response status.
+- Compare submitted quotations.
+- Record award decision and justification.
+- Export RFQ results and audit history.
 
-- Create sourcing event
-- Enter event title
-- Enter event description
-- Select sourcing type
-- Set event start time
-- Set event end time
-- Add items or lots
-- Define item quantities
-- Define specifications
-- Define units of measure
-- Add suppliers
-- Invite suppliers through email
-- Configure auction rules
-- Launch event
-- Monitor invited suppliers
-- See supplier participation status
+Do not include auction configuration in the RFQ wizard. A suggested wizard:
 
-## Supplier invitation flow
+1. Basics
+2. Items / lots
+3. Requirements and attachments
+4. Suppliers
+5. Review
+6. Launch
 
-Preferred flow:
+### 4.2 Supplier invitation and access
 
-1. Buyer enters supplier email.
-2. System sends a signed invitation link.
-3. Supplier opens link.
-4. Supplier verifies email / creates account.
-5. Supplier accepts event terms.
-6. Supplier joins event.
+Suppliers access an RFQ through a unique secret invitation URL. No supplier registration, account, login, or supplier organization membership is required.
 
-Private suppliers do not require full KYB for MVP.
+#### Invitation creation
 
-Required checks:
+The buyer supplies:
 
-- Email verification
-- Valid invitation token
-- Supplier organization association
-- Event eligibility
+- Company name.
+- Contact name (optional).
+- Email address.
+- Optional link to a saved buyer-side `Supplier` directory record.
 
----
+The system:
 
-# 4.2 Bidding Engine
+1. Creates or identifies the `EventSupplier` record for the event.
+2. Generates a cryptographically secure, high-entropy random token.
+3. Stores only a cryptographic hash of the token in `EventSupplierInvitation.tokenHash`.
+4. Stores the invitation's event, event-supplier relationship, contact details, status, expiry, and access timestamps.
+5. Emails the raw token only as part of the invitation URL.
+6. Never stores or logs the raw token.
 
-The bidding engine is the most important technical component.
+#### Invitation redemption
 
-## Required capabilities
+1. Supplier opens the unique link.
+2. Server hashes the supplied token and finds the matching invitation.
+3. Server validates that the invitation exists, is not expired, is not revoked, has an eligible status, and belongs to the expected event-supplier relationship.
+4. Server creates a scoped `SupplierEventSession`.
+5. Server sets a secure, HttpOnly, SameSite cookie containing an opaque session secret.
+6. Server records `firstAccessedAt` on first successful access and updates `lastAccessedAt`.
+7. Server redirects to a clean supplier URL that no longer contains the invitation token.
+8. Supplier can access only the RFQ and their own participation/submission data.
 
-- Bid submission
-- Server-side bid validation
-- Immutable bid history
-- Current best price
-- Supplier ranking
-- Minimum bid decrement
-- Event start validation
-- Event end validation
-- Supplier eligibility validation
-- Currency validation
-- Lot/item validation
-- Realtime updates
-- Soft-close extension
-- Audit logging
+The invitation token is a bearer secret. Anyone possessing it may access the invited supplier's RFQ workspace until the invitation is expired or revoked. Treat it as a credential.
 
-## Bid validation
+#### Session rules
 
-When a supplier submits a bid, server must validate:
+- A session is tied to one invitation and therefore one event-supplier relationship.
+- A session cannot be used to access other events or supplier records.
+- Store only a hash of the session secret if persisted.
+- Validate the session, invitation status, expiry, revocation, and event state server-side on every protected request.
+- Revoking an invitation invalidates all sessions belonging to it.
+- Expiring an invitation prevents new redemption and invalidates access according to the session policy.
+- Rate-limit token redemption and protected write endpoints.
+- Do not expose tokens or session secrets in logs, analytics, error messages, or audit metadata.
+- Email OTP is not required in the MVP. It may be considered later as an additional verification layer, not as a substitute for the invitation model.
 
-1. User is authenticated.
-2. User belongs to a supplier organization.
-3. Supplier is invited to the event.
-4. Supplier has accepted required event terms.
-5. Event is active.
-6. Current server time is within bidding window.
-7. Supplier is allowed to bid on the lot/item.
-8. Bid amount is valid.
-9. Bid follows minimum decrement rules.
-10. Bid currency matches event currency.
+#### Invitation model
 
-The database must commit the valid bid before realtime updates are broadcast.
+The current intended Prisma model is:
 
-## Suggested bid flow
+```prisma
+model EventSupplierInvitation {
+  id              String           @id @default(cuid())
+  eventSupplierId String           @unique
+  eventId         String
+  supplierId      String?          // Links back to buyer's Supplier directory record
 
-```text
-POST /api/events/:eventId/bids
+  companyName     String
+  contactName     String?
+  email           String
 
-Authenticate
-↓
-Authorize supplier
-↓
-Validate event state
-↓
-Validate bid rules
-↓
-Open database transaction
-↓
-Insert immutable bid
-↓
-Recalculate current leader / rank projection
-↓
-Insert audit log
-↓
-Apply auction extension if necessary
-↓
-Commit transaction
-↓
-Publish realtime event
+  tokenHash       String           @unique // Hash of the secret URL token
+
+  status          InvitationStatus @default(PENDING)
+
+  expiresAt       DateTime
+  revokedAt       DateTime?
+  firstAccessedAt DateTime?
+  lastAccessedAt  DateTime?
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  event           SourcingEvent    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  supplier        Supplier?        @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  eventSupplier   EventSupplier    @relation(fields: [eventSupplierId], references: [id], onDelete: Cascade)
+  sessions        SupplierEventSession[]
+
+  @@index([eventId])
+  @@index([supplierId])
+  @@index([email])
+}
 ```
 
----
+`SupplierEventSession` is a required related model for persisted supplier sessions. Its exact schema should be finalized in the implementation plan and validated against the repository's current Prisma conventions.
 
-# 4.3 Result & Award
+Important semantic distinction:
 
-After bidding closes, buyer can view an event result.
+- `firstAccessedAt` means the link was successfully redeemed/accessed; it does not by itself mean the supplier accepted the invitation.
+- `status` represents invitation lifecycle (for example `PENDING`, `ACCEPTED`, `DECLINED`, `EXPIRED`). Define the exact transition to `ACCEPTED` in implementation. Do not silently equate link opening with acceptance.
+- `supplierId` is an optional buyer-side directory association. It is not a supplier login identity.
+- Validate that `eventId` matches the event referenced by `eventSupplier`; do not trust independently supplied IDs.
 
-Result should include:
+### 4.3 Supplier RFQ experience
 
-- Event name
-- Event start
-- Event end
-- Suppliers invited
-- Suppliers participating
-- Number of bids
-- Initial lowest quotation
-- Final lowest quotation
-- Potential savings
-- Lowest bidder
-- Awarded supplier
-- Award reason
-- Complete bid history
+After opening a valid invitation, supplier can:
+
+- View the RFQ overview, deadline, requirements, lots, items, quantities, and specifications.
+- Download authorized RFQ attachments.
+- Answer required qualification questions.
+- Enter quotation prices and other requested commercial information.
+- Add lead times, delivery details, validity period, payment/commercial terms, notes, and supporting files when requested.
+- Save a draft if draft behavior is implemented.
+- Submit a quotation.
+- Submit a revised quotation before the deadline if revisions are allowed.
+- View their own quotation and revision history.
+- See their own submission status and relevant event status.
+- Receive confirmation and award/status emails.
+
+Supplier cannot:
+
+- See other suppliers' identities, invitation details, quotations, attachments, answers, or activity.
+- See a ranking, current leader, best price, or competitor position.
+- Access buyer workspace pages or other RFQs through the same session.
+
+### 4.4 Quotation submission and revision
+
+A quotation is associated with an `EventSupplier` and its event. The invitation/session establishes authority to submit for that event-supplier relationship.
+
+Each submission creates an immutable quotation record (or revision record):
+
+- Event and event-supplier relationship.
+- Revision/version number.
+- Submitted commercial values and line items.
+- Currency.
+- Submission timestamp generated by the server.
+- Optional validity period, lead time, terms, notes, and attachments.
+- Submission status.
+
+The buyer can see the supplier's quotation history according to buyer permissions. The supplier sees only their own history.
+
+A later revision must not mutate the previous submitted record. The application may identify the latest valid revision for comparison, while preserving all prior revisions.
+
+Do not assume one total amount per lot is sufficient if the RFQ requests item-level prices. The quotation structure must support line-level quantities and prices where required.
+
+### 4.5 Result and award
+
+Buyer result view should include:
+
+- RFQ title and reference.
+- RFQ dates and status.
+- Invited suppliers and invitation/response status.
+- Submitted quotations and revision history.
+- Item/lot-level price and commercial comparisons.
+- Qualification responses, where applicable.
+- Awarded supplier, award date, and award justification.
+- Audit history.
 
 Buyer can:
 
-- Award supplier
-- Add award justification
-- Export result
-- Export audit history
+- Compare supplier quotations.
+- Select one supplier for all or part of the RFQ, depending on the supported award model.
+- Record an award justification.
+- Notify the selected supplier and other invited suppliers as appropriate.
+- Export quotation comparison and audit history.
 
-Do not automatically award the lowest supplier.
+No automatic winner selection or lowest-price ranking is part of the MVP.
 
----
+## 5. RFQ Lifecycle and Rules
 
-## 5. Sourcing Types
+Suggested event statuses:
 
-### MVP
+- `DRAFT`
+- `SCHEDULED`
+- `OPEN`
+- `CLOSED`
+- `AWARDED`
+- `CANCELLED`
 
-Support:
+Use server time for deadline enforcement. An RFQ may be opened and closed based on configured dates or explicit buyer action, according to the approved state machine.
 
-1. Standard RFQ
-2. Live Reverse Auction
+Rules:
 
-### Future
+- Draft RFQs may be edited freely by authorized buyers.
+- Once launched, changes to material requirements should be restricted and audited; if changes are allowed, suppliers must be notified.
+- Suppliers may submit or revise quotations only while the RFQ is open and before the server-side deadline.
+- Closing an RFQ prevents further submissions and revisions.
+- An award can be made only by an authorized buyer after the relevant RFQ is closed, unless a specifically approved workflow allows otherwise.
+- No automatic deadline extension is performed because a supplier submits a quotation.
 
-Possible:
+## 6. Supplier Visibility and Confidentiality
 
-3. Multi-round RFQ
-4. Sealed bid
-5. Forward auction
-6. Multi-stage evaluation
+Default policy:
 
-Do not implement future sourcing types unless explicitly scheduled.
+- Supplier sees only the RFQ details made available to invitees and its own submissions.
+- Supplier does not see the invitee list, other supplier names, competitor quotations, competitor files, or competitor activity.
+- Buyer users see supplier responses according to their organization role.
+- Buyer-side tenant isolation applies to supplier directory records and RFQs.
+- Do not expose sensitive buyer-only evaluation notes to suppliers.
 
----
+## 7. Qualification Questions
 
-## 6. Auction Rules
+Optional lightweight qualification may support:
 
-Each reverse auction may include:
+- Yes / No.
+- Text.
+- Numeric.
+- Dropdown.
 
-- Start time
-- End time
-- Minimum decrement
-- Soft-close enabled
-- Soft-close threshold
-- Extension duration
-- Maximum optional bid limit
-- Ranking visibility
+A question may be required, informational, or disqualifying. Examples:
 
-### Soft close
+- Can you deliver to the required location?
+- What is your monthly capacity?
+- Is the requested certification available?
+- What is your estimated lead time?
 
-Example:
+Do not build complex supplier scoring or automated qualification decisions in the MVP.
 
-- Event ends at 15:00
-- Threshold = 2 minutes
-- Extension = 2 minutes
-
-A valid bid at 14:59 extends the event to 15:02.
-
-If another valid bid occurs at 15:01, extend to 15:04.
-
-The extension is based on server time.
-
----
-
-## 7. Supplier Visibility Rules
-
-Default private auction behavior should minimize supplier-to-supplier information exposure.
-
-Suppliers should not see:
-
-- Competitor company names
-- Competitor contact information
-- Full competitor bid history
-
-Configurable future visibility options may include:
-
-- Own rank only
-- Own rank + distance from leader
-- Current best price
-- Anonymous participant count
-
-For MVP, safest default:
-
-> Supplier sees own bid history and current rank.
-
----
-
-## 8. Qualification Questions
-
-Optional lightweight event qualification may be included.
-
-Buyer can define:
-
-- Yes / No
-- Text
-- Numeric
-- Dropdown
-
-Question may be marked:
-
-- Required
-- Informational
-- Disqualifying
-
-Examples:
-
-- Can deliver to Jakarta?
-- Minimum monthly capacity?
-- ISO certification available?
-- Lead time under 30 days?
-
-Do not build complex supplier scoring in MVP.
-
----
-
-## 9. Organization & Roles
-
-Minimum system roles:
+## 8. Organization and Roles
 
 ### Buyer organization
 
-- OWNER
-- ADMIN
-- PROCUREMENT_USER
-- VIEWER
+Minimum roles:
 
-### Supplier organization
-
-- SUPPLIER_ADMIN
-- SUPPLIER_USER
+- `OWNER`
+- `ADMIN`
+- `PROCUREMENT_USER`
+- `VIEWER`
 
 Permissions must be enforced server-side.
 
----
+### Supplier access
 
-## 10. Suggested Data Model
+There are no supplier user accounts or supplier organization roles in the MVP. Supplier access is represented by `EventSupplierInvitation` plus `SupplierEventSession`.
 
-Suggested Prisma entities:
+## 9. Suggested Data Model
 
-```text
-User
-Organization
-OrganizationMember
+Suggested domain entities:
 
-SupplierProfile
+- `User`
+- `Organization`
+- `OrganizationMember`
+- `Supplier` (buyer-owned supplier directory record)
+- `SourcingEvent`
+- `EventSupplier`
+- `EventSupplierInvitation`
+- `SupplierEventSession`
+- `Lot`
+- `Item`
+- `Quotation` / `QuotationRevision` (or one immutable versioned quotation model)
+- `QuotationLine`
+- `QualificationQuestion`
+- `QualificationAnswer`
+- `Award`
+- `AuditLog`
+- `Notification`
 
-SourcingEvent
-EventSupplier
+Suggested enums:
 
-Lot
-Item
+- `OrganizationType`: `BUYER` (do not add supplier organization type unless a later requirement needs it).
+- `EventStatus`: `DRAFT`, `SCHEDULED`, `OPEN`, `CLOSED`, `AWARDED`, `CANCELLED`.
+- `InvitationStatus`: `PENDING`, `ACCEPTED`, `DECLINED`, `EXPIRED`.
+- `QuotationStatus`: define only statuses needed by the implemented submission/review lifecycle.
+- `AwardStatus`: `PENDING`, `AWARDED`, `REJECTED` if the award workflow needs them.
 
-Bid
+Avoid `EventType.REVERSE_AUCTION` and auction-specific models/fields. Do not use `Bid` as the domain name for normal RFQ quotations.
 
-Invitation
+## 10. Audit Log
 
-QualificationQuestion
-QualificationAnswer
+Important actions should generate audit records, including:
 
-Award
-
-AuditLog
-
-Notification
-```
-
-Possible enums:
-
-```text
-OrganizationType
-BUYER
-SUPPLIER
-
-EventType
-RFQ
-REVERSE_AUCTION
-
-EventStatus
-DRAFT
-SCHEDULED
-OPEN
-CLOSED
-AWARDED
-CANCELLED
-
-InvitationStatus
-PENDING
-ACCEPTED
-DECLINED
-EXPIRED
-
-BidStatus
-VALID
-WITHDRAWN
-INVALIDATED
-
-AwardStatus
-PENDING
-AWARDED
-REJECTED
-```
-
----
-
-## 11. Audit Log
-
-Important actions must generate audit records.
-
-Examples:
-
-- User signed in
-- Event created
-- Event edited
-- Supplier invited
-- Supplier invitation accepted
-- Supplier joined event
-- Supplier submitted bid
-- Bid rejected
-- Auction extended
-- Buyer changed auction rules
-- Event opened
-- Event closed
-- Supplier awarded
-- Award changed
-- Export generated
+- Buyer user signed in (if sign-in audit is enabled).
+- Organization created and member/role changes.
+- RFQ created, edited, launched, closed, cancelled.
+- Supplier added to event.
+- Invitation created, email sent, resent, accessed, accepted, declined, expired, or revoked.
+- Supplier session created or revoked (without storing secrets).
+- Qualification response submitted.
+- Quotation submitted or revised.
+- Quotation withdrawn/invalidated if that behavior is supported.
+- Award created or changed.
+- Export generated.
 
 Recommended fields:
+`id`, `organizationId`, `eventId`, `actorUserId` (nullable for supplier-link actions), `eventSupplierId`, `invitationId`, `action`, `entityType`, `entityId`, `metadata`, `ipAddress`, `userAgent`, `createdAt`.
 
-```text
-id
-organizationId
-eventId
-actorUserId
-action
-entityType
-entityId
-metadata
-ipAddress
-userAgent
-createdAt
-```
+Store only necessary metadata. Never store raw invitation tokens, session secrets, or unnecessary sensitive information.
 
-Sensitive metadata should be stored carefully.
+## 11. Realtime Requirements
 
----
+Realtime is not required for the core MVP. Use normal server requests and refresh/revalidation for quotation submission and buyer comparison.
 
-## 12. Realtime Requirements
+Do not add Ably, Pusher, Supabase Realtime, WebSocket channels, or live event updates solely because they appeared in the previous auction plan. Reconsider realtime only when a concrete non-auction use case justifies the operational cost.
 
-Recommended architecture:
+## 12. Authentication
 
-- HTTP request for submitting bids
-- Realtime provider for publishing state updates
+### Buyer side
 
-Preferred providers:
+- Better Auth is the preferred current choice unless the repository already establishes another approved provider.
+- Support buyer email login, email verification, organization membership, and role-based access.
+- Google/Microsoft SSO may be considered later.
+- Do not build SAML in MVP.
 
-- Ably
-- Pusher
-- Supabase Realtime
+### Supplier side
 
-Avoid custom WebSocket infrastructure in MVP unless clearly necessary.
+- No account, password, login, or supplier organization membership.
+- Use secret invitation link redemption and scoped server-side sessions as described in Section 4.2.
+- Do not route suppliers through buyer authentication middleware.
 
-Realtime messages should never be treated as authoritative.
+## 13. File Handling
 
-After receiving realtime updates, UI should display server-derived state.
+Possible attachments:
 
----
+- RFQ scope documents.
+- Specifications and drawings.
+- Images and PDFs.
+- Supplier quotation documents and supporting certificates.
 
-## 13. Authentication
+Use private object storage such as Cloudflare R2 or S3. Do not store binary files directly in PostgreSQL. Authorize every download against the buyer organization or the supplier's invitation session and event scope.
 
-Recommended:
+## 14. Email
 
-- Auth.js
-- Better Auth
-- Clerk
+Use Resend unless the repository establishes another approved provider.
 
-Must support:
+MVP email types:
 
-- Email login
-- Email verification
-- Organization membership
-- Invitation acceptance
+- Supplier invitation with unique secret URL.
+- Invitation reminder.
+- Invitation revoked/expired notice where appropriate.
+- Quotation submission confirmation.
+- Quotation revision confirmation.
+- RFQ deadline reminder / event closing notice.
+- RFQ closed notice.
+- Award notification.
+- Non-awarded supplier notification where buyer chooses to send it.
 
-Optional later:
+Never include the raw invitation token in logs. The email itself necessarily contains the secret invitation URL; treat email delivery and link construction as security-sensitive.
 
-- Google / Microsoft SSO
-- SAML
-- Enterprise SSO
+No auction extension, live rank, current-best-price, or competitive bidding emails.
 
-Do not build SAML in MVP.
+## 15. Pricing Assumptions
 
----
+Primary payer: **Buyer**. Suppliers participate free.
 
-## 14. File Handling
+Potential launch pricing (assumptions, not committed implementation requirements):
 
-Possible event attachments:
+- Free trial: 1 sourcing event.
+- Single event: Rp199,000–399,000 per event.
+- Team: approximately Rp999,000/month.
+- Business: approximately Rp2,500,000–3,000,000+/month.
+- Enterprise: custom.
 
-- Scope documents
-- Specifications
-- Images
-- PDF requirements
+Do not implement percentage-of-savings billing in MVP. Do not charge suppliers to respond to an RFQ.
 
-Use:
+## 16. Public Marketplace — Not MVP
 
-- S3
-- Cloudflare R2
-- UploadThing
+Public supplier discovery is a future expansion, not part of the initial workflow.
 
-Do not store binary files directly in PostgreSQL.
+Potential future supplier verification levels may include:
 
----
+- Email verified.
+- Business domain verified.
+- Business identity verified.
+- Enhanced KYB.
 
-## 15. Email
+Possible Indonesian business information includes legal company name, NIB, NPWP, and company address. Do not automate KYB in MVP.
 
-Recommended provider:
+## 17. Explicit Non-Goals
 
-- Resend
+Do not build these unless specifically requested:
 
-Emails required:
+- Reverse auctions or forward auctions.
+- Public supplier marketplace.
+- Escrow or buyer-to-supplier payment processing.
+- Invoice processing.
+- Purchase order lifecycle.
+- Delivery tracking.
+- Contract lifecycle management.
+- ERP replacement or SAP/Oracle integrations.
+- AI negotiation, supplier recommendation, or price prediction.
+- Supplier scorecards.
+- Complex optimization solver.
+- Native mobile app.
+- SAML.
+- Multi-currency settlement or tax calculation.
+- Supplier accounts/login for the invitation-based MVP.
 
-- Supplier invitation
-- Invitation reminder
-- Event opening
-- Event ending soon
-- Auction extension
-- Event closed
-- Award notification
+## 18. Legal and Compliance Guardrails
 
-Reminder automation can be minimal in MVP.
+Arbiter is a sourcing facilitation platform. It is not:
 
----
+- A buyer.
+- A supplier.
+- A contracting party.
+- A guarantor of supplier performance.
+- A payment intermediary.
 
-## 16. Pricing Assumptions
+Areas requiring legal review before production scale:
 
-Primary payer:
+- Privacy and personal data protection.
+- Electronic systems regulations.
+- Platform terms and supplier invitation terms.
+- Commercial confidentiality.
+- Supplier disputes.
+- Competition law and anti-collusion safeguards.
 
-**Buyer**
-
-Suppliers should participate free.
-
-Potential launch pricing:
-
-### Free Trial
-
-- 1 sourcing event
-
-### Single Event
-
-- Rp199,000–399,000 per event
-
-### Team
-
-- ~Rp999,000/month
-
-### Business
-
-- ~Rp2,500,000–3,000,000+/month
-
-### Enterprise
-
-- Custom
-
-Do not implement percentage-of-savings billing in MVP.
-
-Do not charge suppliers to bid.
-
----
-
-## 17. Public Marketplace — NOT MVP
-
-Public supplier discovery is a future phase.
-
-Future supplier verification levels may include:
-
-### Level 0
-
-Email verified
-
-### Level 1
-
-Business domain verified
-
-### Level 2
-
-Business identity verified
-
-Possible Indonesian information:
-
-- Legal company name
-- NIB
-- NPWP
-- Company address
-
-### Level 3
-
-Enhanced KYB
-
-Do not automate KYB in MVP.
-
----
-
-## 18. Explicit Non-Goals
-
-The following are **not MVP features**:
-
-- Public supplier marketplace
-- Escrow
-- Buyer-to-supplier payments
-- Invoice processing
-- Purchase order lifecycle
-- Delivery tracking
-- Contract management
-- ERP replacement
-- SAP integration
-- Oracle integration
-- AI negotiation
-- AI supplier recommendation
-- AI price prediction
-- Supplier scorecards
-- Complex optimization solver
-- Mobile app
-- SAML
-- Multi-currency settlement
-- Tax calculation
-
-Agents must not add these unless specifically requested.
-
----
-
-## 19. Legal / Compliance Guardrails
-
-ReverseBid is a sourcing facilitation platform.
-
-It should not be represented as:
-
-- A buyer
-- A supplier
-- A contracting party
-- A guarantor of supplier performance
-- A payment intermediary
-
-Important areas requiring legal review before production scale:
-
-- Competition law
-- Bid-rigging / collusion rules
-- Privacy law
-- Electronic systems regulations
-- Platform terms
-- Supplier disputes
-- Commercial confidentiality
-
-Do not build escrow or fund custody into the MVP.
-
----
-
-## 20. MVP Success Metrics
+## 19. MVP Success Metrics
 
 Primary metrics:
 
-- Events created
-- Events launched
-- Invitations sent
-- Supplier invitation acceptance rate
-- Supplier participation rate
-- Average bids per event
-- Percentage of launched events reaching completion
-- Repeat buyer usage
-- Time from event creation to launch
-- Estimated savings per event
+- RFQs created and launched.
+- Invitations sent and successfully delivered.
+- Invitation link access rate.
+- Supplier participation rate.
+- Quotation submission rate.
+- Average time from RFQ creation to launch.
+- Percentage of launched RFQs reaching closure.
+- Time from RFQ closure to award.
+- Repeat buyer usage.
 
 North-star candidate:
 
 > Successfully completed sourcing events per active buyer organization.
 
----
+Do not use auction-specific metrics such as bids per event, ranking changes, or auction savings.
 
-## 21. Product Roadmap
+## 20. Product Roadmap
 
-### Phase 1 — Private RFQ
+### Phase 1 — Core private RFQ
 
-- Buyer organizations
-- Supplier invitations
-- RFQ
-- Bid submission
-- Award
-- Audit trail
-- Export
+- Buyer organizations and roles.
+- RFQ creation and management.
+- Lots, items, requirements, and attachments.
+- Supplier invitations with secret links.
+- Supplier event sessions without supplier login.
+- Quotation submission and revision.
+- RFQ closure.
+- Quotation comparison.
+- Award, audit trail, and export.
 
-### Phase 2 — Reverse Auction
+### Phase 2 — Supplier directory improvements
 
-- Live rank
-- Realtime updates
-- Minimum decrement
-- Soft close
+- Saved supplier directory.
+- Supplier reuse across events.
+- Supplier tags and contact management.
+- Invitation history.
 
-### Phase 3 — Supplier Database
+### Phase 3 — Qualification and workflow improvements
 
-- Saved supplier directory
-- Supplier reuse across events
-- Supplier tags
+- Qualification questions.
+- Improved evaluation criteria and award documentation.
+- Reminder workflows.
 
-### Phase 4 — Supplier Discovery
+### Phase 4 — Supplier discovery
 
-- Public supplier profiles
-- Verification levels
-- Search / discovery
+- Public supplier profiles.
+- Verification levels.
+- Search and discovery.
 
-### Phase 5 — Supplier Performance
+### Phase 5 — Supplier performance
 
-- Performance history
-- Ratings
-- Procurement analytics
+- Historical performance records.
+- Buyer-managed ratings.
+- Procurement analytics.
 
 ### Phase 6 — Integrations
 
-- API
-- Webhooks
-- ERP integrations
+- API.
+- Webhooks.
+- ERP integrations.
 
----
+## 21. Core Product Rule
 
-## 22. Core Product Rule
+Prioritize:
 
-When making product decisions, prioritize:
-
-1. Procurement workflow reliability
-2. Auditability
-3. Simplicity
-4. Supplier participation
-5. Buyer usability
+1. Procurement workflow reliability.
+2. Supplier participation with minimal friction.
+3. Confidentiality and security.
+4. Auditability.
+5. Simplicity.
+6. Buyer usability.
 
 Do not attempt to build a cheaper SAP Ariba.
 
