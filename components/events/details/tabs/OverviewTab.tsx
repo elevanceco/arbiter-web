@@ -6,9 +6,21 @@ import EventDetailsCard from "./overview-tab/EventDetailsCard";
 
 interface OverviewTabProps {
   event: EventDetails;
+  onUpdateStartDate: (date: Date) => Promise<{
+    success: boolean;
+    error?: string;
+  }>;
+  onUpdateEndDate: (date: Date) => Promise<{
+    success: boolean;
+    error?: string;
+  }>;
 }
 
-export function OverviewTab({ event }: OverviewTabProps) {
+export function OverviewTab({
+  event,
+  onUpdateStartDate,
+  onUpdateEndDate,
+}: OverviewTabProps) {
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
@@ -17,7 +29,11 @@ export function OverviewTab({ event }: OverviewTabProps) {
       </div>
 
       <div className="space-y-6">
-        <ScheduleCard event={event} />
+        <ScheduleCard
+          event={event}
+          onUpdateStartDate={onUpdateStartDate}
+          onUpdateEndDate={onUpdateEndDate}
+        />
         <EventDetailsCard event={event} />
       </div>
     </div>

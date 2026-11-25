@@ -59,7 +59,7 @@ Event:
     ✔ kok belum berubah ke INVITATION_PENDING? @started(26-11-19 19:07) @done(26-11-19 19:14) @lasted(7m3s)
     ✔ sesuaiin status di event detail dengan yang di enum @done(26-11-19 19:18)
     ✔ jika end date udah lewat, ada badge kasih unjuk kalo end date udah lewat, quotation ditutup @started(26-11-24 19:43) @done(26-11-24 20:42) @lasted(59m31s)
-    ☐ extend due date function @started(26-11-25 06:37)
+    ✔ extend due date function @started(26-11-25 06:37) @done(26-11-26 06:49) @lasted(1d12m31s)
 
 Supplier Submit:
     ✔ testing supplier invitation yang dikirim dari email @done(26-11-18 06:38)

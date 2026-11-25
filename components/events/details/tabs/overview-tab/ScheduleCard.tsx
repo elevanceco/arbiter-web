@@ -2,24 +2,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, Clock, Globe } from "lucide-react";
 import type { EventDetails } from "../../types";
 
+import { EditableScheduleDate } from "./EditableScheduleDate";
+
 interface ScheduleCardProps {
   event: EventDetails;
+  onUpdateStartDate: (date: Date) => Promise<{
+    success: boolean;
+    error?: string;
+  }>;
+  onUpdateEndDate: (date: Date) => Promise<{
+    success: boolean;
+    error?: string;
+  }>;
 }
 
-function formatDate(date: Date | null, timezone: string) {
-  if (!date) return "Not specified";
-
-  return new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: timezone,
-  }).format(date);
-}
-
-export default function ScheduleCard({ event }: ScheduleCardProps) {
+export default function ScheduleCard({
+  event,
+  onUpdateStartDate,
+  onUpdateEndDate,
+}: ScheduleCardProps) {
   const now = Date.now();
+
   const hasNotStarted =
     event.startsAt !== null && event.startsAt.getTime() > now;
+
   const periodHasEnded = event.endsAt !== null && event.endsAt.getTime() < now;
 
   return (
@@ -31,11 +37,16 @@ export default function ScheduleCard({ event }: ScheduleCardProps) {
       <CardContent className="space-y-5">
         <div className="flex gap-3">
           <CalendarDays className="mt-0.5 h-4 w-4 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">Start date</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {formatDate(event.startsAt, event.timezone)}
-            </p>
+
+          <div className="min-w-0 flex-1">
+            <EditableScheduleDate
+              label="Start date"
+              value={event.startsAt}
+              timezone={event.timezone}
+              actionLabel="Change Date"
+              onSave={onUpdateStartDate}
+            />
+
             {hasNotStarted && (
               <p className="mt-2 text-sm text-amber-700">
                 This RFQ hasn’t started yet. Update the start date to today to
@@ -47,11 +58,16 @@ export default function ScheduleCard({ event }: ScheduleCardProps) {
 
         <div className="flex gap-3">
           <Clock className="mt-0.5 h-4 w-4 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">Closing date</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {formatDate(event.endsAt, event.timezone)}
-            </p>
+
+          <div className="min-w-0 flex-1">
+            <EditableScheduleDate
+              label="Closing date"
+              value={event.endsAt}
+              timezone={event.timezone}
+              actionLabel="Extend Date"
+              onSave={onUpdateEndDate}
+            />
+
             {periodHasEnded && (
               <p className="mt-2 text-sm text-amber-700">
                 The quotation period has ended. Extend the closing date to let
@@ -63,6 +79,7 @@ export default function ScheduleCard({ event }: ScheduleCardProps) {
 
         <div className="flex gap-3">
           <Globe className="mt-0.5 h-4 w-4 text-muted-foreground" />
+
           <div>
             <p className="text-sm font-medium">Timezone</p>
             <p className="mt-1 text-sm text-muted-foreground">

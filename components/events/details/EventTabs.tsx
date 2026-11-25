@@ -12,9 +12,21 @@ import { AwardTab } from "./tabs/AwardTab";
 
 interface EventTabsProps {
   event: EventDetails;
+  onUpdateStartDate: (date: Date) => Promise<{
+    success: boolean;
+    error?: string;
+  }>;
+  onUpdateEndDate: (date: Date) => Promise<{
+    success: boolean;
+    error?: string;
+  }>;
 }
 
-export function EventTabs({ event }: EventTabsProps) {
+export function EventTabs({
+  event,
+  onUpdateStartDate,
+  onUpdateEndDate,
+}: EventTabsProps) {
   return (
     <Tabs defaultValue="overview" className="space-y-6">
       <TabsList className="h-auto w-full justify-start overflow-x-auto rounded-none border-b bg-transparent p-0">
@@ -26,7 +38,11 @@ export function EventTabs({ event }: EventTabsProps) {
       </TabsList>
 
       <TabsContent value="overview">
-        <OverviewTab event={event} />
+        <OverviewTab
+          event={event}
+          onUpdateStartDate={onUpdateStartDate}
+          onUpdateEndDate={onUpdateEndDate}
+        />
       </TabsContent>
 
       <TabsContent value="lots">

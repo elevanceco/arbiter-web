@@ -3,10 +3,7 @@ import { prisma } from "@/lib/db/prisma";
 import { resolveOrganizationContext } from "@/features/organizations/server/resolveOrganization";
 
 import type { EventDetails } from "@/components/events/details/types";
-
-import { EventHeader } from "@/components/events/details/EventHeader";
-import { EventOverview } from "@/components/events/details/EventOverview";
-import { EventTabs } from "@/components/events/details/EventTabs";
+import EventPageClient from "./EventPageClient";
 
 interface EventPageProps {
   params: Promise<{ id: string }>;
@@ -126,13 +123,5 @@ export default async function EventPage({ params }: EventPageProps) {
     })),
   };
 
-  return (
-    <div className="space-y-6">
-      <EventHeader event={eventData} />
-
-      <EventOverview event={eventData} />
-
-      <EventTabs event={eventData} />
-    </div>
-  );
+  return <EventPageClient event={eventData} />;
 }
