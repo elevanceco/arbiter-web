@@ -206,7 +206,10 @@ export default async function SupplierEventPage({ params }: PageProps) {
           {(canSubmitQuotation || canViewQuotation) && (
             <div className="mt-4">
               <Button>
-                <Link href={`/supplier/events/${event.id}/quotation`}>
+                <Link
+                  href={`/supplier/events/${event.id}/quotation`}
+                  className="flex items-center"
+                >
                   {canSubmitQuotation
                     ? "Prepare quotation"
                     : "View my quotation"}
