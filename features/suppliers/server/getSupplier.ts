@@ -7,7 +7,6 @@ export async function getSupplier(id: string) {
   if (context.state !== "RESOLVED" || !context.organization) {
     throw new Error("Unauthorized access");
   }
-  console.log("finding supplier id: " + id);
   const supplier = await prisma.supplier.findFirst({
     where: {
       id,

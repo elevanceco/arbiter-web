@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 
 import { prisma } from "@/lib/db/prisma";
-import { getSupplierSession } from "@/lib/supplier-auth/session";
 
 import type { SourcingEventStatus } from "@/lib/generated/prisma/enums";
 import {
@@ -20,6 +19,9 @@ import {
 } from "@/features/supplier/context/quotationContext";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import SupplierWorkspaceFooter from "@/components/supplier/SupplierWorkspaceFooter";
+import SupplierWorkspaceHeader from "@/components/supplier/SupplierWorkspaceHeader";
+import SupplierWelcome from "@/components/supplier/SupplierWorkspaceWelcome";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -93,6 +95,16 @@ export default async function SupplierEventPage({ params }: PageProps) {
     redirect("/supplier/invitations/unavailable");
   }
 
+  const supplier = await prisma.supplier.findUnique({
+    where: {
+      id: ctx.supplierId,
+    },
+    select: {
+      legalName: true,
+      contactName: true,
+    },
+  });
+
   // Load only this RFQ's details.
   const event = await prisma.sourcingEvent.findUnique({
     where: {
@@ -144,15 +156,6 @@ export default async function SupplierEventPage({ params }: PageProps) {
   const canSubmitQuotation =
     isOpenForQuotations(event) && isSupplierEligible(ctx.supplierStatus);
 
-  console.log("isOpenForQuotations: " + isOpenForQuotations(event));
-  console.log(
-    "isSupplierEligible: " +
-      isSupplierEligible(ctx.supplierStatus) +
-      " - Supplier status: " +
-      ctx.supplierStatus,
-  );
-  console.log("canSubmitQuotation: " + canSubmitQuotation);
-
   const canViewQuotation =
     !canSubmitQuotation &&
     (event.status === "CLOSED" || event.status === "AWARDED");
@@ -160,21 +163,14 @@ export default async function SupplierEventPage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-background/90">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
-          <div>
-            <h1 className="text-lg font-bold tracking-tight">Arbiter</h1>
-            <p className="text-xs text-muted-foreground">Supplier workspace</p>
-          </div>
-
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <ShieldCheck className="h-4 w-4" />
-            Secure RFQ access
-          </div>
-        </div>
-      </header>
+      <SupplierWorkspaceHeader />
 
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-6">
+        <SupplierWelcome
+          contactName={supplier?.contactName}
+          companyName={supplier?.legalName}
+        />
+
         {/* RFQ heading */}
         <section className="rounded-xl border bg-background p-6 shadow-sm sm:p-8">
           <div className="flex flex-wrap items-center gap-2">
@@ -342,10 +338,7 @@ export default async function SupplierEventPage({ params }: PageProps) {
         </section>
 
         {/* Footer */}
-        <footer className="flex items-center justify-center gap-2 py-4 text-xs text-muted-foreground">
-          <FileText className="h-3.5 w-3.5" />
-          <span>Powered by Arbiter</span>
-        </footer>
+        <SupplierWorkspaceFooter />
       </div>
     </main>
   );

@@ -11,7 +11,6 @@ export async function resolveOrganizationContext() {
     return { state: "UNAUTHENTICATED" as const };
   }
 
-  console.log(session.user.emailVerified);
   if (!session.user.emailVerified) {
     return { state: "UNVERIFIED" as const, user: session.user };
   }

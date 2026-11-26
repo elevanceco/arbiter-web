@@ -35,7 +35,6 @@ function isSameOriginRequest(request: NextRequest): boolean {
 
   // Fall back to browser Fetch Metadata.
   const fetchSite = request.headers.get("sec-fetch-site");
-  console.log("fetchSite: " + fetchSite);
 
   if (fetchSite !== null) {
     return fetchSite === "same-origin";
@@ -122,7 +121,6 @@ export async function POST(request: NextRequest, context: RouteContext) {
         }
 
         if (invitation.eventSupplier.status === "SELECTED") {
-          console.log("updating eventSupplier status to ACCEPTED");
           await tx.eventSupplier.update({
             where: {
               id: invitation.eventSupplier.id,

@@ -12,6 +12,8 @@ import {
   isSupplierEligible,
 } from "@/features/supplier/context/quotationContext";
 import { QuotationForm } from "@/components/supplier/QuotationForm";
+import SupplierWorkspaceHeader from "@/components/supplier/SupplierWorkspaceHeader";
+import SupplierWorkspaceFooter from "@/components/supplier/SupplierWorkspaceFooter";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -39,6 +41,16 @@ export default async function SupplierQuotationPage({ params }: PageProps) {
   // Session → invitation → event supplier, all validated against this event.
   const ctx = await getSupplierQuotationContext(eventId);
   if (!ctx) redirect("/supplier/invitations/unavailable");
+
+  const supplier = await prisma.supplier.findUnique({
+    where: {
+      id: ctx.supplierId,
+    },
+    select: {
+      legalName: true,
+      contactName: true,
+    },
+  });
 
   const event = await prisma.sourcingEvent.findUnique({
     where: { id: eventId },
@@ -137,18 +149,7 @@ export default async function SupplierQuotationPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="border-b bg-background/90">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
-          <div>
-            <h1 className="text-lg font-bold tracking-tight">Arbiter</h1>
-            <p className="text-xs text-muted-foreground">Supplier workspace</p>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <ShieldCheck className="h-4 w-4" />
-            Secure RFQ access
-          </div>
-        </div>
-      </header>
+      <SupplierWorkspaceHeader />
 
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-6">
         <Link
@@ -160,19 +161,42 @@ export default async function SupplierQuotationPage({ params }: PageProps) {
         </Link>
 
         <section className="rounded-xl border bg-background p-6 shadow-sm sm:p-8">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            Your quotation
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">{event.title}</p>
+          <div className="flex items-start gap-3">
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">
+                {supplier?.legalName && (
+                  <span className="font-medium text-foreground">
+                    {supplier.legalName}
+                  </span>
+                )}
+                {supplier?.contactName && supplier.legalName && " · "}
+                {supplier?.contactName}
+              </p>
+
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+                {latest ? "Revise your quotation" : "Prepare your quotation"}
+              </h2>
+
+              <p className="mt-1 text-sm text-muted-foreground">
+                {event.title}
+              </p>
+            </div>
+          </div>
+
           {event.endsAt && (
-            <p className="mt-3 text-sm">
-              Submissions close{" "}
-              <span className="font-medium">
-                {formatDate(event.endsAt, event.timezone)}
-              </span>
-              . You can submit a revision until then; each submission is kept as
-              a numbered revision.
-            </p>
+            <div className="mt-6 rounded-lg bg-muted/50 p-4">
+              <p className="text-sm">
+                Submissions close{" "}
+                <span className="font-medium">
+                  {formatDate(event.endsAt, event.timezone)}
+                </span>
+              </p>
+
+              <p className="mt-1 text-xs text-muted-foreground">
+                You can submit a revised quotation until the deadline. Each
+                submission is saved as a separate revision.
+              </p>
+            </div>
           )}
         </section>
 
@@ -220,6 +244,8 @@ export default async function SupplierQuotationPage({ params }: PageProps) {
           )}
         </section>
       </div>
+
+      <SupplierWorkspaceFooter />
     </main>
   );
 }

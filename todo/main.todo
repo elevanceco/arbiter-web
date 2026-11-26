@@ -68,7 +68,8 @@ Supplier Submit:
     ✔ saat accept RFQ, /redeem halamannya forbidden. @started(26-11-18 06:39) @done(26-11-18 06:55) @lasted(16m30s)
     ✔ saat accept RFQ - page masih 404 nanti kita buat. @started(26-11-18 07:48) @done(26-11-18 07:55) @lasted(7m40s)
     ✔ saat accept RFQ - dashboard buyer pada detail event, "Accepted Invitations" engga bertambah. @started(26-11-18 07:55) @done(26-11-19 06:38) @lasted(22h43m5s)
-    
+    ✔ personalize tampilan, passing company name & contact namenya @started(26-11-27 06:43) @done(26-11-27 06:46) @lasted(3m35s)
+
     Quotation:
         ✔ tambahin model di schema.prisma untuk quotation @started(26-11-24 17:05) @done(26-11-24 19:23) @lasted(2h18m12s)
         ✔ tambahin model untuk auditlog @started(26-11-24 19:23) @done(26-11-24 19:31) @lasted(8m4s)
@@ -80,4 +81,4 @@ Supplier Submit:
 
 Buyer Quotation's Tab:
     ✔ wire model Quoation dengan QuotationsTab @started(26-11-26 18:55) @done(26-11-26 19:14) @lasted(19m30s)
-    ☐ buat UI yang rapih, utamain bisa compare harga antar vendor @started(26-11-26 19:14)
+    ✔ buat UI yang rapih, utamain bisa compare harga antar vendor @started(26-11-26 19:14) @done(26-11-27 06:43) @lasted(11h29m11s)

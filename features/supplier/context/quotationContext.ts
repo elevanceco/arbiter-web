@@ -10,6 +10,7 @@ export type SupplierQuotationContext = {
   invitationId: string;
   eventSupplierId: string;
   supplierStatus: string;
+  supplierId: string;
 };
 
 export async function getSupplierQuotationContext(
@@ -33,7 +34,9 @@ export async function getSupplierQuotationContext(
           revokedAt: true,
           expiresAt: true,
           eventSupplierId: true,
-          eventSupplier: { select: { eventId: true, status: true } },
+          eventSupplier: {
+            select: { eventId: true, status: true, supplier: true },
+          },
         },
       },
     },
@@ -60,6 +63,7 @@ export async function getSupplierQuotationContext(
     invitationId: inv.id,
     eventSupplierId: inv.eventSupplierId,
     supplierStatus: String(inv.eventSupplier.status),
+    supplierId: inv.eventSupplier.supplier.id,
   };
 }
 
