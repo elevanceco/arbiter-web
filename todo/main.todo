@@ -60,7 +60,7 @@ Event:
     ✔ sesuaiin status di event detail dengan yang di enum @done(26-11-19 19:18)
     ✔ jika end date udah lewat, ada badge kasih unjuk kalo end date udah lewat, quotation ditutup @started(26-11-24 19:43) @done(26-11-24 20:42) @lasted(59m31s)
     ✔ extend due date function @started(26-11-25 06:37) @done(26-11-26 06:49) @lasted(1d12m31s)
-    ☐ supplier udah berhasil submit quotation, tapi belom muncul di QuotationsTab (coba cek berhasil kesubmit atau engga quotationnya)
+    ✔ supplier udah berhasil submit quotation, tapi belom muncul di QuotationsTab (coba cek berhasil kesubmit atau engga quotationnya) @started(26-11-26 18:33) @done(26-11-26 18:52) @lasted(19m1s)
 
 Supplier Submit:
     ✔ testing supplier invitation yang dikirim dari email @done(26-11-18 06:38)
@@ -77,3 +77,7 @@ Supplier Submit:
         ✔ validasi harga & quantity hanya boleh angka @done(26-11-26 06:54)
         ✔ submit quotation @done(26-11-26 06:55)
         ☐ gabisa submit jika sudah lewat due date
+
+Buyer Quotation's Tab:
+    ✔ wire model Quoation dengan QuotationsTab @started(26-11-26 18:55) @done(26-11-26 19:14) @lasted(19m30s)
+    ☐ buat UI yang rapih, utamain bisa compare harga antar vendor @started(26-11-26 19:14)
