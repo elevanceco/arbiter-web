@@ -82,3 +82,8 @@ Supplier Submit:
 Buyer Quotation's Tab:
     ✔ wire model Quoation dengan QuotationsTab @started(26-11-26 18:55) @done(26-11-26 19:14) @lasted(19m30s)
     ✔ buat UI yang rapih, utamain bisa compare harga antar vendor @started(26-11-26 19:14) @done(26-11-27 06:43) @lasted(11h29m11s)
+
+Close Round:
+    ☐ munculin close round saat RFQ masih open.
+    ☐ action close round
+    ☐ buat warning jika supplier belum ada yang submit quotation, "Are you sure you want to close this round? No suppliers have submitted their quotation"

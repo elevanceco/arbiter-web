@@ -15,7 +15,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { openRoundAction } from "@/features/events/actions/event-actions";
+import {
+  closeRoundAction,
+  openRoundAction,
+} from "@/features/events/actions/event-actions";
 import { EventDetails } from "./details/types";
 import { toast } from "sonner";
 import { getEventActions } from "@/features/events/event-rules";
@@ -66,7 +69,7 @@ export function EventActionButtons({ event }: { event: EventDetails }) {
         </Button>
       )}
 
-      {/* {a.showCloseRound && (
+      {a.showCloseRound && (
         <ConfirmAction
           trigger={
             <>
@@ -79,7 +82,7 @@ export function EventActionButtons({ event }: { event: EventDetails }) {
           disabled={pending}
           onConfirm={() => startTransition(() => closeRoundAction(event.id))}
         />
-      )} */}
+      )}
 
       {a.showRenegotiate && (
         <Button variant="outline">

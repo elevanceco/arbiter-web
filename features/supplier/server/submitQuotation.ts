@@ -9,6 +9,7 @@ import {
   isSupplierEligible,
 } from "../context/quotationContext";
 import { quotationInputSchema } from "../schema/quotationSchema";
+import { createAuditLog } from "@/features/audit/server/createAuditLog";
 
 type ErrorCode =
   | "UNAUTHORIZED"
@@ -189,20 +190,19 @@ export async function submitQuotation(
         select: { id: true, revisionNumber: true, submittedAt: true },
       });
 
-      // TODO(confirm): audit model/fields are still a guess.
-      await tx.auditLog.create({
-        data: {
-          eventId,
-          action: "QUOTATION_SUBMITTED",
-          actorType: "SUPPLIER",
-          metadata: {
-            quotationId: quotation.id,
-            revisionNumber,
-            eventSupplierId: ctx.eventSupplierId,
-            invitationId: ctx.invitationId,
-            sessionId: ctx.sessionId,
-            totalAmount: total.toFixed(4),
-          },
+      // T_TRACK
+      await createAuditLog({
+        tx,
+        eventId,
+        action: "QUOTATION_SUBMITTED",
+        actorType: "SUPPLIER",
+        metadata: {
+          quotationId: quotation.id,
+          revisionNumber,
+          eventSupplierId: ctx.eventSupplierId,
+          invitationId: ctx.invitationId,
+          sessionId: ctx.sessionId,
+          totalAmount: total.toFixed(4),
         },
       });
 
